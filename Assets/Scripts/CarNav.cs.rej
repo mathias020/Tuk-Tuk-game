@@ -1,0 +1,143 @@
+diff a/Assets/Scripts/CarNav.cs b/Assets/Scripts/CarNav.cs	(rejected hunks)
+@@ -4,25 +4,26 @@
+ 
+ public class CarNav : MonoBehaviour {
+ 
+-	public static float xspeep = 0f;    //Current_speed
+-	public float power = 0.003f;          //current power (acceleration)
+-	public float friction = 0.95f;      //friction
++	public static float currentSpeed = 0f; //Current_speed
++	public float power = 0.003f;           //current power (acceleration)
++	public float friction = 0.95f;         //friction
+ 	
+-	public float turnSpeed;             //turn speed = 10
+-    public float breakPower = 0.01f;    //break 
+-    public float maxSpeed = 0.01f;      //maxSpeed
++	public float turnSpeed;                //turn speed = 10
++    public float breakPower = 0.01f;       //break 
++    public float maxSpeed = 0.01f;         //maxSpeed
+ 
+ 	public float fuel = 5000;
+-    private float lastStearing;         //time
++    private float lastStearing = 0.0f;     //time
+ 
+ 	
+ 	// Update is called once per frame
+ 	void Update () {
+-        if (fuel > 0)
++        if (fuel > 0 && theController.getState(theController.STATE_START))
+         {
+             checkPassangerPickUp();
+             checkHorn();
+             checkPause();
++
+             //Get acceleration
+             if (theController.getAcceleration() > -0.98f) //  -1.0f to 1.0f, bad reading on the board => >-0.98f
+                 power = 0.003f;
+@@ -32,44 +33,42 @@
+             //Tuk Tuk state and break
+             if (theController.getState(theController.STATE_BREAK))
+             {
+-                if (xspeep > 0)
++                if (currentSpeed > 0)
+                 {
+-                    if (xspeep - breakPower >= 0)
++                    if (currentSpeed - breakPower >= 0)
+                     {
+-                        xspeep -= breakPower;
++                        currentSpeed -= breakPower;
+                     }
+                     else
+-                        xspeep = 0;
++                        currentSpeed = 0;
+ 
+                 }
+-                if (xspeep < 0)
++                if (currentSpeed < 0)
+                 {
+-                    if (xspeep + breakPower >= 0)
++                    if (currentSpeed + breakPower <= 0)
+                     {
+-                        xspeep += breakPower;
++                        currentSpeed += breakPower;
+                     }
+                     else
+-                        xspeep = 0;
++                        currentSpeed = 0;
+                 }
+             }
+             else {
+-                if (theController.getState(theController.STATE_FORWARD))
++                if (theController.getState(theController.STATE_FORWARD) && currentSpeed >= 0)
+                 {
+-                    if (xspeep < maxSpeed)
++                    if (currentSpeed < maxSpeed)
+                     {
+-                        xspeep += power;
++                        currentSpeed += power;
+                         fuel -= (power * 1000);
+                     }
+                 }
+-                if (theController.getState(theController.STATE_REVERSE))
+-                {
+-                    //!!!HAVE TO IMPLEMENT
+-                    /*
+-                    if (xspeep < maxSpeed)
++                if (theController.getState(theController.STATE_REVERSE) && currentSpeed <= 0)
++                {                    
++                    if (currentSpeed > -(maxSpeed / 2))
+                     {
+-                        xspeep += power;
++                        currentSpeed -= power;
+                         fuel -= (power * 1000);
+-                    }*/
++                    }
+                 }
+             }
+ 
+@@ -89,13 +88,14 @@
+             //fuel;
+             if (fuel < 0)
+             {
+-                xspeep = 0;
++                currentSpeed = 0;
+                 Debug.Log("Out of fuel: " + fuel);
+             }
+ 
+-            //friction and moving forward
+-            xspeep *= friction;
+-            transform.Translate(Vector3.right * xspeep);
++            //friction
++            currentSpeed *= friction;
++            //moving
++            transform.Translate(Vector3.right * currentSpeed);
+ 
+             
+         }
+@@ -107,13 +107,6 @@
+             //pick up Passanger;            
+         }
+     }
+-    private void checkHorn()
+-    {
+-        if (theController.getState(theController.STATE_OPTION3))
+-        {
+-            //horn;
+-        }
+-    }
+     private void checkPause()
+     {
+         if(theController.getState(theController.STATE_OPTION2))
+@@ -121,5 +114,11 @@
+             //Pause game, main menu
+         }
+     }
+-
++    private void checkHorn()
++    {
++        if (theController.getState(theController.STATE_OPTION3))
++        {
++            //horn;
++        }
++    }    
+ }

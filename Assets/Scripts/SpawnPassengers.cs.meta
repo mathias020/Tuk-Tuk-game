@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 9c1e2ebd45b94cc4983d2e2680e948ee
+timeCreated: 1462533448
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - human: {fileID: 122266, guid: a365bf3cd86a7e44198cf28e8e69ff48, type: 2}
+  - animation: {instanceID: 0}
+  - target: {fileID: 456980, guid: a365bf3cd86a7e44198cf28e8e69ff48, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
